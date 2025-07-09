@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  qr-task-app:
+    build:
+      context: ./backend
+    container_name: qr-task-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./db:/app/db
+      - ./backend/app/templates:/app/templates
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000

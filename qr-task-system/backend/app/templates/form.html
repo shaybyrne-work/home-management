@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submit Task</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #222;
+    }
+
+    h1, h2 {
+      font-weight: 600;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 4px 4px 4px 0;
+    }
+
+    .btn-update { background-color: #007bff; color: #fff; }
+    .btn-done { background-color: #28a745; color: #fff; }
+    .btn-delete { background-color: #dc3545; color: #fff; }
+
+    .task-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .task-header {
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .status-pending { color: #ff9800; font-weight: 600; }
+    .status-done { color: #4caf50; font-weight: 600; }
+
+    .task-actions form {
+      display: inline-block;
+      margin-right: 8px;
+    }
+  </style>
+  <script>
+    function toggleCustomInput(value) {
+      const container = document.getElementById("custom_task_container");
+      container.style.display = value === "Other" ? "block" : "none";
+    }
+  </script>
+</head>
+<body>
+  <h1>Submit Task for House {{ house_id }}</h1>
+
+  <!-- House Metadata -->
+  <div class="section">
+    <h2>House Details</h2>
+    {% if house_metadata %}
+    <form action="/update_house" method="post">
+      <input type="hidden" name="house_id" value="{{ house_metadata.house_id }}">
+
+      <label for="owner">Owner</label>
+      <input type="text" name="owner" value="{{ house_metadata.owner }}">
+
+      <label for="address">Address</label>
+      <input type="text" name="address" value="{{ house_metadata.address }}">
+
+      <label for="manager_email">Primary Email</label>
+      <input type="email" name="manager_email" value="{{ house_metadata.manager_email }}">
+
+      <label for="email2">Secondary Email</label>
+      <input type="email" name="email2" value="{{ house_metadata.email2 }}">
+
+      <label for="phone1">Phone 1</label>
+      <input type="text" name="phone1" value="{{ house_metadata.phone1 }}">
+
+      <label for="phone2">Phone 2</label>
+      <input type="text" name="phone2" value="{{ house_metadata.phone2 }}">
+
+      <button type="submit" class="btn-update">Update Contact Info</button>
+    </form>
+    {% else %}
+    <p>No metadata found for this house.</p>
+    {% endif %}
+  </div>
+
+  <!-- Task Submission -->
+  <div class="section">
+    <h2>New Task</h2>
+    <form action="/submit" method="post">
+      <input type="hidden" name="house_id" value="{{ house_id }}">
+
+      <label for="preset_task">Choose a Task</label>
+      <select name="preset_task" id="preset_task" onchange="toggleCustomInput(this.value)">
+        <option value="">-- Select a Task --</option>
+        <option value="Restock fridge">Restock fridge</option>
+        <option value="Take out garbage">Take out garbage</option>
+        <option value="Fuel boat">Fuel boat</option>
+        <option value="Clean windows">Clean windows</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <div id="custom_task_container" style="display:none;">
+        <label for="custom_task">Custom Task:</label>
+        <input type="text" id="custom_task" name="custom_task" placeholder="Enter custom task...">
+      </div>
+
+      <button type="submit" class="btn-update">Submit Task</button>
+    </form>
+  </div>
+
+  <!-- Task List -->
+  <div class="section">
+    <h2>Pending Tasks</h2>
+    {% if tasks %}
+      {% for task in tasks %}
+        {% if task[3] != 'done' %}
+          <div class="task-card">
+            <div class="task-header">
+              <span>{{ task[2] }}</span>
+              <span class="status-pending">Pending</span>
+            </div>
+            <div class="task-actions">
+              <form action="/edit" method="post">
+                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                <input type="hidden" name="house_id" value="{{ house_id }}">
+                <input type="text" name="new_description" placeholder="Update task..." required>
+                <button class="btn-update">Update</button>
+              </form>
+              <form action="/complete" method="post">
+                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                <input type="hidden" name="house_id" value="{{ house_id }}">
+                <button class="btn-done">Mark Done</button>
+              </form>
+              <form action="/delete" method="post">
+                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                <input type="hidden" name="house_id" value="{{ house_id }}">
+                <button class="btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p>No tasks found.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

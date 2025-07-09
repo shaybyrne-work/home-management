@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Submitted</title>
+  <meta http-equiv="refresh" content="10;url=/house/{{ house_id }}">
+  <script>
+    let seconds = 10;
+    function countdown() {
+      const counter = document.getElementById("countdown");
+      if (seconds > 0) {
+        seconds--;
+        counter.innerText = seconds;
+        setTimeout(countdown, 1000);
+      }
+    }
+    window.onload = countdown;
+  </script>
+</head>
+<body>
+  <h1>✅ Task Submitted</h1>
+  <p><strong>House ID:</strong> {{ house_id }}</p>
+  <p><strong>Task:</strong> {{ task_description }}</p>
+  <p>You’ll be redirected back in <span id="countdown">10</span> seconds.</p>
+  <p><a href="/house/{{ house_id }}">Click here</a> if you're not redirected.</p>
+</body>
+</html>
