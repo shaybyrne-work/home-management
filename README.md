@@ -129,6 +129,25 @@ owner,address,manager_email,email2,phone1,phone2
 - The system uses cookies to pass flash messages (e.g., CSV import results)
 - The SQLite database file should be backed up regularly (`db/tasks.db`)
 
+## 📋 How to Stop, Rebuild and Restart the App
+From the root of your project (qr-task-system/):
+
+✅ 1. Stop the app
+docker-compose down
+This stops and removes all running containers, networks, and volumes defined in your docker-compose.yml.
+
+✅ 2. Rebuild the app (after code or dependency changes)
+docker-compose build
+Only needed if you’ve changed:
+
+Dockerfile
+
+Python dependencies (requirements.txt)
+
+Any app code (e.g., main.py, templates)
+
+✅ 3. Start the app
+docker-compose up
 ---
 
 ## 📄 License
